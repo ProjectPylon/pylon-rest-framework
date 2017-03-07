@@ -1,0 +1,30 @@
+app {
+	controller(SubRouteController("/subroute"))
+}
+
+class SubRouteController: Controller {
+	handle {
+		route("/foo/bar/:id") {
+			formAttribute("form")
+			formModel(FormModel::class)
+			response(Foo)
+		}.handle { 
+			it.jsonObject("form")
+			it.form<FormModel>()
+		}
+
+		get("/foo/foo/bar") {
+
+		}
+	}
+}
+
+object InternalController: Controller
+
+fun Controller.route(route: String, `handle`: Route.() -> Unit) {
+	
+}
+
+fun controller(name = "Unnamed", `handle`: InternalController.() -> Unit) {
+	InternalController(name).`handle`()
+}
