@@ -10,7 +10,7 @@ import kotlinx.coroutines.experimental.launch
 /**
  * Created by dummy on 2/21/17.
  */
-abstract class Controller(val name: String, val controllerPath: String) {
+abstract class Controller(val name: String) {
     lateinit var pylon: Pylon
     internal lateinit var router: Router
     val logger = LoggerFactory.getLogger(this.javaClass)
@@ -18,7 +18,7 @@ abstract class Controller(val name: String, val controllerPath: String) {
     abstract fun init()
 }
 
-class PylonController(name: String, controllerPath: String) : Controller(name, controllerPath) {
+class PylonController(name: String) : Controller(name) {
     override fun init() {}
 }
 
@@ -60,21 +60,21 @@ inline fun <reified T> Controller.service(): T {
     return pylon.service<T>()
 }
 
-fun Controller.controller(controller: Controller) {
-    controller.pylon = pylon
-    controller.router = Router.router(controller.pylon.vertx)
-    controller.init()
-    router.mountSubRouter(controller.controllerPath, controller.router)
-}
-
-fun Controller.controller(name: String = "", controllerPath: String = "", init: Controller.() -> Unit) {
-    with(PylonController("${this.name}/$name", controllerPath)) {
-        pylon = this@controller.pylon
-        router = Router.router(pylon.vertx)
-        init.invoke(this)
-        this@controller.router.mountSubRouter(this.controllerPath, router)
-    }
-}
+//fun Controller.controller(controller: Controller, controllerPath: String = "/") {
+//    controller.pylon = pylon
+//    controller.router = Router.router(controller.pylon.vertx)
+//    controller.init()
+//    router.mountSubRouter(controllerPath, controller.router)
+//}
+//
+//fun Controller.controller(name: String = "", controllerPath: String = "/", init: Controller.() -> Unit) {
+//    with(PylonController("${this.name}/$name")) {
+//        pylon = this@controller.pylon
+//        router = Router.router(pylon.vertx)
+//        init.invoke(this)
+//        this@controller.router.mountSubRouter(controllerPath, router)
+//    }
+//}
 
 enum class RouteMethod(internal val vertxMethod: HttpMethod) {
     DELETE(HttpMethod.DELETE),

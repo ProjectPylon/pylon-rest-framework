@@ -1,11 +1,4 @@
-package com.dummyc0m.pylon.pass.backend.code
-
-import com.dummyc0m.pylon.framework.console.ConsoleInterface
 import com.dummyc0m.pylon.framework.experimental.*
-import io.vertx.core.json.JsonObject
-import io.vertx.ext.auth.User
-import io.vertx.ext.web.handler.BodyHandler
-import io.vertx.ext.web.handler.CorsHandler
 import kotlinx.coroutines.experimental.future.await
 
 /**
@@ -15,26 +8,26 @@ import kotlinx.coroutines.experimental.future.await
 // experimentation
 
 fun main(args: Array<String>) {
-    val something = pylon {
+    val something = com.dummyc0m.pylon.framework.experimental.pylon {
         port = 8080
 
         provider { AuthForm("ewriuadfs", "asdf") }
 
         controller("authController", "/auth") {
-            route(RouteMethod.ANY, "/*").handle(BodyHandler.create())
+            route(com.dummyc0m.pylon.framework.experimental.RouteMethod.ANY, "/*").handle(io.vertx.ext.web.handler.BodyHandler.create())
 
             post("/authenticate") {
                 AuthForm(it.request().getFormAttribute("username"), it.request().getFormAttribute("secret"))
             }.handle {
                 val (username, secret) = it
-                JsonObject()
+                io.vertx.core.json.JsonObject()
             }
         }
 
         controller("randomController", "/random") {
             //            val anything = service<ConferenceListForm>()
-            route(RouteMethod.ANY, "/*").handle(BodyHandler.create())
-            route(RouteMethod.ANY, "/*").handle(CorsHandler.create("*"))
+            route(com.dummyc0m.pylon.framework.experimental.RouteMethod.ANY, "/*").handle(io.vertx.ext.web.handler.BodyHandler.create())
+            route(com.dummyc0m.pylon.framework.experimental.RouteMethod.ANY, "/*").handle(io.vertx.ext.web.handler.CorsHandler.create("*"))
 
             post("/conferences/:id/list") {
                 ConferenceListForm(it.pathParam("id"), it.request().getFormAttribute("formId").toInt(), it.user())
@@ -44,7 +37,7 @@ fun main(args: Array<String>) {
             }
 
             get("/conferences/list").handle {
-                JsonObject()
+                io.vertx.core.json.JsonObject()
             }
 
             catch {
@@ -52,10 +45,10 @@ fun main(args: Array<String>) {
             }
         }
 
-        controller(ACertainStupidController())
+        controller(ACertainStupidController(), "/science")
 
     }.start()
-    val consoleInterface = ConsoleInterface(something, System.`in`)
+    val consoleInterface = com.dummyc0m.pylon.framework.console.ConsoleInterface(something, System.`in`)
     consoleInterface.commandManager.addConsumer("stop") {
         val future = something.shutdown()
         future.await()
@@ -66,9 +59,9 @@ fun main(args: Array<String>) {
 
 data class AuthForm(val username: String, val secret: String)
 
-data class ConferenceListForm(val id: String, val formId: Int, val user: User)
+data class ConferenceListForm(val id: String, val formId: Int, val user: io.vertx.ext.auth.User)
 
-class ACertainStupidController : Controller("theCertainScientificController", "/science") {
+class ACertainStupidController : com.dummyc0m.pylon.framework.experimental.Controller("theCertainScientificController") {
     override fun init() {
         val service = service<AuthForm>()
 

@@ -97,15 +97,15 @@ fun pylon(parentPath: String = "/", init: Pylon.() -> Unit): Pylon {
     return Vertx.vertx().pylon(parentPath, init)
 }
 
-fun Pylon.controller(controller: Controller) {
+fun Pylon.controller(controller: Controller, controllerPath: String = "/") {
     controller.pylon = this
     controller.router = Router.router(controller.pylon.vertx)
     controller.init()
-    router.mountSubRouter(controller.controllerPath, controller.router)
+    router.mountSubRouter(controllerPath, controller.router)
 }
 
 fun Pylon.controller(name: String = "", controllerPath: String = "/", init: Controller.() -> Unit) {
-    with(PylonController(name, controllerPath)) {
+    with(PylonController(name)) {
         pylon = this@controller
         router = Router.router(pylon.vertx)
         init.invoke(this)
