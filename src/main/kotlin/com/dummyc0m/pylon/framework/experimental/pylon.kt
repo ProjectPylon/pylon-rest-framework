@@ -35,7 +35,7 @@ class Pylon(internal val vertx: Vertx, parentPath: String, name: String = "pylon
         with(serviceDiscovery.entries.find { (key, value) -> key == T::class }) {
             val value = this?.value
             if (this === null || value !is T) {
-                throw ServiceNotFoundExceotion("cannot find ${T::class}")
+                throw ServiceNotFoundException("cannot find ${T::class}")
             }
             return value
         }
