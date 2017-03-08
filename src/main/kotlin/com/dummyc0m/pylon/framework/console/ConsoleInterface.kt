@@ -10,7 +10,7 @@ import java.io.InputStreamReader
  * reads console commands and does stuff
  * Created by dummy on 2/12/17.
  */
-internal class ConsoleInterface(private val pylon: Pylon,
+class ConsoleInterface(private val pylon: Pylon,
                                 private val inputStream: InputStream) : Thread("PylonConsoleThread") {
     val commandManager = CommandManager()
 

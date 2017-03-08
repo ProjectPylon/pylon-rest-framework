@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap
 /**
  * Created by dummy on 2/12/17.
  */
-internal class CommandManager {
+class CommandManager {
     private val consumers = ConcurrentHashMap<String, MutableList<suspend (List<String>) -> Unit>>()
 
     fun enqueueCommand(command: String) {
