@@ -32,6 +32,14 @@
         </repository>
     </repositories>
 
+    <distributionManagement>
+        <repository>
+            <id>snapshotRepo</id>
+            <name>nexus.dummyc0m.com</name>
+            <url>https://nexus.dummyc0m.com/repository/maven-snapshots//</url>
+        </repository>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
