@@ -36,7 +36,7 @@
         <repository>
             <id>snapshotRepo</id>
             <name>nexus.dummyc0m.com</name>
-            <url>https://nexus.dummyc0m.com/repository/maven-snapshots//</url>
+            <url>https://nexus.dummyc0m.com/repository/maven-snapshots/</url>
         </repository>
     </distributionManagement>
 
