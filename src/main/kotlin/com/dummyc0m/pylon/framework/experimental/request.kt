@@ -7,6 +7,7 @@ import io.vertx.core.logging.LoggerFactory
 import io.vertx.ext.web.RoutingContext
 
 /**
+ * a little silly, but works. needs clean up
  * Created by dummy on 2/21/17.
  */
 class Request<T>(method: RouteMethod, name: String, pylon: Pylon) {
