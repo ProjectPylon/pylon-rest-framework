@@ -3,7 +3,6 @@ package com.dummyc0m.pylon.framework.experimental
 import io.vertx.core.Vertx
 import io.vertx.core.http.HttpServer
 import io.vertx.core.http.HttpServerOptions
-import io.vertx.core.logging.LoggerFactory
 import io.vertx.core.net.JksOptions
 import io.vertx.ext.web.Router
 import java.util.concurrent.CompletableFuture
@@ -13,12 +12,12 @@ import kotlin.reflect.KClass
 /**
  * Created by dummy on 2/21/17.
  */
-class Pylon(internal val vertx: Vertx, parentPath: String, name: String = "pylon") {
+class Pylon(internal val vertx: Vertx, parentPath: String, name: String = "pylon"): Controller(name) {
+    override fun init() {}
+
     private val rootRouter = Router.router(vertx)
-    internal val router = Router.router(vertx)
-    val logger = LoggerFactory.getLogger(this.javaClass)
     private var httpServer: HttpServer? = null
-    val serviceDiscovery = ConcurrentHashMap<KClass<*>, Any>()
+    val serviceMapping = ConcurrentHashMap<KClass<*>, Any>()
     internal var running = false
 
     var ssl = false
@@ -28,11 +27,13 @@ class Pylon(internal val vertx: Vertx, parentPath: String, name: String = "pylon
     var host = "localhost"
 
     init {
+        pylon = this
+        router = Router.router(vertx)
         rootRouter.mountSubRouter(parentPath, router)
     }
 
     inline fun <reified T> require(): T {
-        with(serviceDiscovery.entries.find { (key, value) -> key == T::class }) {
+        with(serviceMapping.entries.find { (key, value) -> key == T::class }) {
             val value = this?.value
             if (this === null || value !is T) {
                 throw ServiceNotFoundException("cannot find ${T::class}")
@@ -43,7 +44,7 @@ class Pylon(internal val vertx: Vertx, parentPath: String, name: String = "pylon
 
     inline fun <reified T> provide(service: T) {
         if (service !== null) {
-            serviceDiscovery.put(T::class, service)
+            serviceMapping.put(T::class, service)
         } else {
             throw ServiceNotInitializedException("cannot initialize ${T::class}")
         }
@@ -86,9 +87,9 @@ class Pylon(internal val vertx: Vertx, parentPath: String, name: String = "pylon
     }
 }
 
-fun Vertx.pylon(parentPath: String = "/", init: Pylon.() -> Unit): Pylon {
+fun Vertx.pylon(parentPath: String = "/", pylonInit: Pylon.() -> Unit): Pylon {
     with(Pylon(this, parentPath)) {
-        init()
+        pylonInit()
         return this
     }
 }

@@ -1,5 +1,6 @@
 import com.dummyc0m.pylon.framework.console.ConsoleInterface
 import com.dummyc0m.pylon.framework.experimental.*
+import io.vertx.core.http.HttpMethod
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.CorsHandler
@@ -13,13 +14,14 @@ import kotlinx.coroutines.experimental.future.await
 
 fun main(args: Array<String>) {
     val something = pylon {
-        port = 3928
+        port = 34829
 
         provider { AuthForm("ewriuadfs", "asdf") }
 
-        controller("authController", "/auth") {
-            route(name = "/*").sync(BodyHandler.create())
+        route(name = "/*").sync(CorsHandler.create("*").allowedHeader("authorization").allowedMethods(hashSetOf(HttpMethod.GET, HttpMethod.OPTIONS, HttpMethod.POST)))
+        route(name = "/*").sync(BodyHandler.create())
 
+        controller("authController", "/auth") {
             post("/authenticate") {
                 AuthForm(requestParam("username"), requestParam("secret"))
             }.async {
@@ -31,10 +33,6 @@ fun main(args: Array<String>) {
         }
 
         controller("randomController", "/random") {
-            //            val anything = require<ConferenceListForm>()
-            route(name = "/*").sync(BodyHandler.create())
-            route(name = "/*").sync(CorsHandler.create("*"))
-
             post("/conferences/:id/list") {
                 ConferenceListForm(pathParam("id"), requestParam("formId").toInt(), user())
             }.sync {
@@ -52,11 +50,12 @@ fun main(args: Array<String>) {
         }
 
         controller(ACertainStupidController(), "/science")
-
     }.start()
+
     val consoleInterface = ConsoleInterface(something, System.`in`)
     consoleInterface.commandManager.addConsumer("quit()") {
         val future = something.shutdown()
+        println("Shutting down...")
         future.await()
         System.exit(0)
     }

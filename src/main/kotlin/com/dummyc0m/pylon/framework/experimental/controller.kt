@@ -13,7 +13,7 @@ import kotlinx.coroutines.experimental.launch
 abstract class Controller(val name: String) {
     lateinit var pylon: Pylon
     internal lateinit var router: Router
-    val logger = LoggerFactory.getLogger(this.javaClass)
+    val logger = LoggerFactory.getLogger(this.javaClass)!!
 
     abstract fun init()
 }
@@ -24,7 +24,7 @@ class PylonController(name: String) : Controller(name) {
 
 fun <T> Controller.route(method: RouteMethod = RouteMethod.ANY, name: String, parse: RoutingContext.() -> T): Request<T> {
     // register request
-    val request = Request<T>(method, name, pylon)
+    val request = Request<T>(method, name)
     with(if (method === RouteMethod.ANY) {
         router.route(name)
     } else {

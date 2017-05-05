@@ -13,7 +13,7 @@ import kotlin.coroutines.experimental.buildIterator
  * a little silly, but works. needs clean up
  * Created by dummy on 2/21/17.
  */
-class Request<T>(method: RouteMethod, val name: String, pylon: Pylon) {
+class Request<T>(method: RouteMethod, val name: String) {
     internal var handler: (T.(RoutingContext) -> Any?)? = null
     val logger = LoggerFactory.getLogger(this.javaClass)
 
