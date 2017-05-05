@@ -2,6 +2,7 @@ package com.dummyc0m.pylon.framework.experimental
 
 import io.vertx.core.AsyncResult
 import io.vertx.core.Handler
+import io.vertx.ext.web.RoutingContext
 import kotlin.coroutines.experimental.suspendCoroutine
 
 /**
@@ -18,3 +19,12 @@ inline suspend fun <T> vx(crossinline callback: (Handler<AsyncResult<T>>) -> Uni
                 }
             })
         }
+
+fun RoutingContext.requestParamOptional(attribute: String): String? = request().getFormAttribute(attribute)
+
+fun RoutingContext.requestParam(attribute: String): String = request().getFormAttribute(attribute) ?: throw InvalidRequest(attribute)
+
+fun RoutingContext.pathVariable(attribute: String): String = pathParam(attribute) ?: throw InvalidRequest(attribute)
+
+fun RoutingContext.pathVariableOptional(attribute: String): String? = pathParam(attribute)
+

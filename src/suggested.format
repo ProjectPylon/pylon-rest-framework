@@ -3,12 +3,12 @@ app {
 }
 
 class SubRouteController: Controller {
-	handle {
+	sync {
 		route("/foo/bar/:id") {
-			formAttribute("form")
+			requestParam("form")
 			formModel(FormModel::class)
 			response(Foo)
-		}.handle { 
+		}.sync {
 			it.jsonObject("form")
 			it.form<FormModel>()
 		}
@@ -21,10 +21,10 @@ class SubRouteController: Controller {
 
 object InternalController: Controller
 
-fun Controller.route(route: String, `handle`: Route.() -> Unit) {
+fun Controller.route(route: String, `sync`: Route.() -> Unit) {
 	
 }
 
-fun controller(name = "Unnamed", `handle`: InternalController.() -> Unit) {
-	InternalController(name).`handle`()
+fun controller(name = "Unnamed", `sync`: InternalController.() -> Unit) {
+	InternalController(name).`sync`()
 }

@@ -7,3 +7,5 @@ package com.dummyc0m.pylon.framework.experimental
 class ServiceNotFoundException(message: String?) : RuntimeException(message)
 
 class ServiceNotInitializedException(message: String?) : RuntimeException(message)
+
+class InvalidRequest(message: String?): RuntimeException(message)

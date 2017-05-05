@@ -31,7 +31,7 @@ class Pylon(internal val vertx: Vertx, parentPath: String, name: String = "pylon
         rootRouter.mountSubRouter(parentPath, router)
     }
 
-    inline fun <reified T> service(): T {
+    inline fun <reified T> require(): T {
         with(serviceDiscovery.entries.find { (key, value) -> key == T::class }) {
             val value = this?.value
             if (this === null || value !is T) {

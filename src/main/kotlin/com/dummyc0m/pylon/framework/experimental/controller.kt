@@ -22,7 +22,7 @@ class PylonController(name: String) : Controller(name) {
     override fun init() {}
 }
 
-fun <T> Controller.route(method: RouteMethod = RouteMethod.ANY, name: String, parse: (RoutingContext) -> T): Request<T> {
+fun <T> Controller.route(method: RouteMethod = RouteMethod.ANY, name: String, parse: RoutingContext.() -> T): Request<T> {
     // register request
     val request = Request<T>(method, name, pylon)
     with(if (method === RouteMethod.ANY) {
@@ -31,9 +31,7 @@ fun <T> Controller.route(method: RouteMethod = RouteMethod.ANY, name: String, pa
         router.route(method.vertxMethod, name)
     }) {
         this.handler {
-            launch(CommonPool) {
-                request.consume(it, parse(it))
-            }
+            request.consume(it, it.parse())
         }
     }
     return request
@@ -41,10 +39,10 @@ fun <T> Controller.route(method: RouteMethod = RouteMethod.ANY, name: String, pa
 
 fun Controller.route(method: RouteMethod = RouteMethod.ANY, name: String): Request<RoutingContext> = route(method, name, emptyRequestHandler)
 
-fun <T> Controller.get(name: String, init: (RoutingContext) -> T) = route(RouteMethod.GET, name, init)
+fun <T> Controller.get(name: String, init: RoutingContext.() -> T) = route(RouteMethod.GET, name, init)
 
 // TODO Don't forget multipart
-fun <T> Controller.post(name: String, init: (RoutingContext) -> T) = route(RouteMethod.POST, name, init)
+fun <T> Controller.post(name: String, init: RoutingContext.() -> T) = route(RouteMethod.POST, name, init)
 
 fun Controller.get(name: String) = route(RouteMethod.GET, name, emptyRequestHandler)
 
@@ -56,8 +54,8 @@ fun Controller.catch(exceptionHandler: Controller.(Throwable) -> Unit) {
     }
 }
 
-inline fun <reified T> Controller.service(): T {
-    return pylon.service<T>()
+inline fun <reified T> Controller.require(): T {
+    return pylon.require<T>()
 }
 
 //fun Controller.controller(controller: Controller, controllerPath: String = "/") {
@@ -88,4 +86,4 @@ enum class RouteMethod(internal val vertxMethod: HttpMethod) {
     ANY(HttpMethod.OTHER)
 }
 
-val emptyRequestHandler: (RoutingContext) -> RoutingContext = { it }
+val emptyRequestHandler: RoutingContext.() -> RoutingContext = { this }
